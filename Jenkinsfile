@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = 'us-west-1'
         ECR_REPO = 'my-ecr-repo'
         IMAGE_TAG = 'latest'
-        TF_DIR = './jenkins'  
+        
     }
 
     stages {
@@ -15,29 +15,31 @@ pipeline {
             }
         }
 
-        stage('Terraform Init') {
+        stages {
+        stage('init') {
             steps {
-                script {
-                    // Initialize Terraform
-                    sh "cd $TF_DIR && terraform init"
+                dir('ecr-repo') {
+                    sh 'terraform init'
+                }
+            }
+        }
+        }
+
+       stage('plan') {
+            steps {
+                dir('ecr-repo') {
+                    echo "Running terraform plan....."
+                    sh 'terraform plan'
                 }
             }
         }
 
-        stage('Terraform Plan') {
+        stage('apply') {
             steps {
-                script {
-                    // Run Terraform Plan to see the changes that will be applied
-                    sh "cd $TF_DIR && terraform plan -var 'region=$AWS_REGION'"
-                }
-            }
-        }
-
-        stage('Terraform Apply') {
-            steps {
-                script {
-                    // Apply the Terraform plan to create resources
-                    sh "cd $TF_DIR && terraform apply -auto-approve -var 'region=$AWS_REGION'"
+                dir('ecr-repo') {
+                    echo "Running terraform apply..."
+                    
+                    sh 'terraform apply -auto-approve'
                 }
             }
         }
@@ -68,19 +70,5 @@ pipeline {
             }
         }
 
-        stage('Deploy to ECS') {
-            steps {
-                script {
-                    def ecsServiceUpdate = sh(script: """
-                        aws ecs update-service \
-                            --cluster my-cluster \
-                            --service my-service \
-                            --force-new-deployment \
-                            --image $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
-                    """, returnStdout: true).trim()
-                    echo ecsServiceUpdate
-                }
-            }
-        }
     }
 }
