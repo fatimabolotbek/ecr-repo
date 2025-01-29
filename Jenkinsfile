@@ -7,8 +7,7 @@ pipeline {
         IMAGE_TAG = 'latest'
     }
 
-    
-
+    stages {  // This is the correct place to define all your stages
         stage('Init') {
             steps {
                 dir('ecr-repo') {
@@ -61,3 +60,4 @@ pipeline {
             }
         }
     }
+}
