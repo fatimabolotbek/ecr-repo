@@ -5,12 +5,40 @@ pipeline {
         AWS_REGION = 'us-west-1'
         ECR_REPO = 'my-ecr-repo'
         IMAGE_TAG = 'latest'
+        TF_DIR = './ecr-repo'  
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                script {
+                    // Initialize Terraform
+                    sh "cd $TF_DIR && terraform init"
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                script {
+                    // Run Terraform Plan to see the changes that will be applied
+                    sh "cd $TF_DIR && terraform plan -var 'region=$AWS_REGION'"
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                script {
+                    // Apply the Terraform plan to create resources
+                    sh "cd $TF_DIR && terraform apply -auto-approve -var 'region=$AWS_REGION'"
+                }
             }
         }
 
