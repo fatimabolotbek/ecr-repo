@@ -7,12 +7,7 @@ pipeline {
         IMAGE_TAG = 'latest'
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+    
 
         stage('Init') {
             steps {
