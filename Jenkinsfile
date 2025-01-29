@@ -5,7 +5,6 @@ pipeline {
         AWS_REGION = 'us-west-1'
         ECR_REPO = 'my-ecr-repo'
         IMAGE_TAG = 'latest'
-        
     }
 
     stages {
@@ -15,17 +14,15 @@ pipeline {
             }
         }
 
-        stages {
-        stage('init') {
+        stage('Init') {
             steps {
                 dir('ecr-repo') {
                     sh 'terraform init'
                 }
             }
         }
-        }
 
-       stage('plan') {
+        stage('Plan') {
             steps {
                 dir('ecr-repo') {
                     echo "Running terraform plan....."
@@ -34,11 +31,10 @@ pipeline {
             }
         }
 
-        stage('apply') {
+        stage('Apply') {
             steps {
                 dir('ecr-repo') {
                     echo "Running terraform apply..."
-                    
                     sh 'terraform apply -auto-approve'
                 }
             }
@@ -69,6 +65,5 @@ pipeline {
                 }
             }
         }
-
     }
 }
