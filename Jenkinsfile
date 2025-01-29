@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = 'us-west-1'
         ECR_REPO = 'my-ecr-repo'
         IMAGE_TAG = 'latest'
-        TF_DIR = './ecr-repo'  
+        TF_DIR = './jenkins'  
     }
 
     stages {
